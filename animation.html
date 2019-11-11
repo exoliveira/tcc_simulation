@@ -1,0 +1,135 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<meta charset="ISO-8859-1">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+
+<select id="selected_cenario" onchange="chooseData()">
+	<option selected="selected" value="">Escolha uma opção</option>
+	<option value="data_persecution_slow">Perseguição em baixa velocidade</option>
+	<option value="data_persecution_fast">Perseguição em alta velocidade</option>
+	<option value="data_dodge_slow">Esquiva em baixa velocidade</option>
+	<option value="data_dodge_fast">Esquiva em alta velocidade</option>
+	<option value="data_come_and_go_fast">Vai e volta em alta velocidade</option>
+	<option value="data_come_and_go_slow">Vai e volta em baixa velocidade</option>
+</select>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+<div id="my_dataviz2"></div>
+
+<script src="data_persecution_slow.js"></script> 
+<script src="data_persecution_fast.js"></script> 
+<script src="data_dodge_slow.js"></script> 
+<script src="data_dodge_fast.js"></script> 
+<script src="data_come_and_go_fast.js"></script> 
+<script src="data_come_and_go_slow.js"></script> 
+
+<script>
+	var dados;
+
+// set the dimensions and margins of the graph
+var margin = {top: 300, right: 300, bottom: 30, left: 600},
+	width = 1060 - margin.left - margin.right,
+	height = 1000 - margin.top - margin.bottom;
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+	.append("svg")
+	.attr("width", width + margin.left + margin.right)
+	.attr("height", height + margin.top + margin.bottom)
+	.append("g")
+	.attr("transform",
+		"translate(" + margin.left + "," + margin.top + ")")
+// Add X axis
+
+var x = d3.scaleLinear()
+	.domain([-20, 200])
+//    .range([ -width/4 , width*3/2 ]);
+	.range([-20, 200])
+svg.append("g")
+//.attr("class", "myXaxis")   // Note that here we give a class to the X axis, to be able to call it later and modify it
+//.attr("transform", "translate(0," + height + ")")
+	.attr("transform", "translate(0"," + y(0) + ")
+	.call(d3.axisBottom(x))
+	.attr("opacity", "0")
+
+// Add Y axis
+var y = d3.scaleLinear()
+	.domain([-200, 200])
+//.range([ -height/2 , height/2]);
+	.range([-200, 200])
+svg.append("g")
+	.attr("transform", "translate(" + x(0) + ",0)")
+	.call(d3.axisLeft(y));
+
+var limit = svg.append("circle")
+	.attr("r",50)
+	.attr("stroke","#0000FF")
+	.style("fill","none");
+
+var circle = svg.append("circle")
+	.attr("r",10)
+	.attr("stroke","#00FF00")
+	.style("fill","none");
+
+var prey = svg.append("circle")
+	.attr("r",3)
+	.style("fill","#FF0000");
+
+var predator = svg.append("circle")
+	.attr("r",3)
+	.style("fill","#000000");
+</script>
+
+<script>
+	function chooseData() {
+		chosen = document.getElementById("selected_cenario").value;
+		if (chosen == "data_persecution_slow") {
+			dados = data_persecution_slow;
+		}
+		if (chosen == "data_persecution_fast") {
+			dados = data_persecution_fast;
+		}
+		if (chosen == "data_dodge_slow") {
+			dados = data_dodge_slow;
+		}
+		if (chosen == "data_dodge_fast") {
+			dados = data_dodge_fast;
+		}
+		if (chosen == "data_come_and_go_fast") {
+			dados = data_come_and_go_fast;
+		}
+		if (chosen == "data_come_and_go_slow") {
+			dados = data_come_and_go_slow;
+		}
+		move();
+	}
+function sleep(milliseconds) {
+	return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+async function move() {
+	i = 0;
+	while (i < dados.length) {
+		await sleep(50);
+		limit.attr("cx",-dados[i].x )
+		limit.attr("cy",-dados[i].y )
+		circle.attr("cx",-dados[i].x )
+		circle.attr("cy",-dados[i].y )
+		predator.attr("cx",-dados[i].x )
+		predator.attr("cy",-dados[i].y )
+		prey.attr("cx",-dados[i].preyx )
+		prey.attr("cy",-dados[i].preyy )
+		console.log('iteration ' + i + ' dist = ' + dados[i].dist)
+		i++;
+
+	}
+
+}
+
+
+
+
+</script>
